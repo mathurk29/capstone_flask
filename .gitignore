@@ -115,4 +115,5 @@ dmypy.json
 
 
 virt/*
-flasker-self.zip
+*.zip
+
