@@ -1,5 +1,7 @@
-from flask import Flask, render_template
-
+from flask import Flask, app, render_template
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField 
+from wtforms.validators import DataRequired
 
 # Create a Flask instance
 application = Flask(__name__)
@@ -14,6 +16,11 @@ def index():
     return render_template("index.html")
 
 # localhost:5000/user/john
-@application.route("/user/<name>")
-def user(name):
-    return "<h1>Hello {}!!!</h1>".format(name)
+@application.route("/user/<username>")
+def user(username):
+    return render_template('user.html', username=username) 
+
+
+@application.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html")
