@@ -1,13 +1,13 @@
-from flask import Flask, app, render_template
+from flask import Flask, app, render_template, flash
 
 # wtf is not flask specific - the following lib implements it
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField  
-from wtforms.validators import DataRequired 
-
+from wtforms import StringField, SubmitField 
+from wtforms.validators import DataRequired
+from flask import redirect, url_for, request
 # Create a Flask instance
 application = Flask(__name__)
-application.config['SECRET_KEY'] = "SOMEKEY"
+application.config['SECRET_KEY'] = "SOMEKEY" # for CRF tokens
 
 # Create a form class
 class NamerForm(FlaskForm):
@@ -43,5 +43,6 @@ def name():
     if form.validate_on_submit():
         name = form.name.data
         form.name.data=''
+        flash("Form sumitted successfully.")
     return render_template('name.html', name=name, form=form)
 

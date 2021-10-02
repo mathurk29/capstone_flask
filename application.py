@@ -1,4 +1,4 @@
-from flask import Flask, app, render_template
+from flask import Flask, app, render_template, flash
 
 # wtf is not flask specific - the following lib implements it
 from flask_wtf import FlaskForm
@@ -43,5 +43,6 @@ def name():
     if form.validate_on_submit():
         name = form.name.data
         form.name.data=''
+        flash("Form sumitted successfully.")
     return render_template('name.html', name=name, form=form)
 
