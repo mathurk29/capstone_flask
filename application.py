@@ -1,13 +1,46 @@
+from datetime import datetime
+from enum import unique
 from flask import Flask, app, render_template, flash
-
-# wtf is not flask specific - the following lib implements it
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField 
+from flask_wtf import FlaskForm  #wtf is not flask specific - this lib implements it
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from flask import redirect, url_for, request
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+
+
 # Create a Flask instance
 application = Flask(__name__)
-application.config['SECRET_KEY'] = "SOMEKEY" # for CRF tokens
+
+# Add database
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+# Secret Key
+application.config['SECRET_KEY'] = "SOMEKEY"  # for CRF tokens
+
+# Initialize database
+db = SQLAlchemy(application)
+
+
+# Create Model
+class Users(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Create a String
+
+    def __repr__(self) -> str:
+        return "<Name %r>" % self.name
+
+
+# User Form
+class UserForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
+    submit = SubmitField('Enter button')
+
+
 
 # Create a form class
 class NamerForm(FlaskForm):
@@ -15,19 +48,24 @@ class NamerForm(FlaskForm):
     submit = SubmitField('Enter button')
 
 
-#Create a route decorator
-@application.route('/')
+@application.route('/user/add', methods=['GET','POST'])
+def add_user():
+    form = UserForm()
+    return render_template("add_user.html", form=form)
 
+
+# Create a route decorator
+@application.route('/')
 # def index():
 #     return "<h1>Hello World!</h1>"
-
 def index():
     return render_template("index.html")
+
 
 # localhost:5000/user/john
 @application.route("/user/<username>")
 def user(username):
-    return render_template('user.html', username=username) 
+    return render_template('user.html', username=username)
 
 
 @application.errorhandler(404)
@@ -42,7 +80,6 @@ def name():
     form = NamerForm()
     if form.validate_on_submit():
         name = form.name.data
-        form.name.data=''
+        form.name.data = ''
         flash("Form sumitted successfully.")
     return render_template('name.html', name=name, form=form)
-
