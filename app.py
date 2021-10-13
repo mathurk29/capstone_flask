@@ -3,9 +3,20 @@ from flask import Flask, app, render_template, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime   
+
 # Create a Flask instance
 application = Flask(__name__)
-application.config['SECRET_KEY'] = "SOMEKEY" # for CRF tokens
+
+# Create a Secret Key
+application.config['SECRET_KEY'] = "SOMEKEY"  # for CRF tokens
+
+# Add database to our application
+application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+# Initialize database
+db = SQLAlchemy(application)
 
 # Create a form class
 class NamerForm(FlaskForm):
